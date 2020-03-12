@@ -42,7 +42,7 @@ public class RaytracingLoop implements Runnable {
 		// Anzahl der Strahlen mit Leistung 0 die dann nicht berechnet werden
 		zerobeams = 0;
 		// Eingestrahlte Leistung
-		power_in = 0;
+		power_in = 0;		
 		// Array welches die Anzahl an Reflexionen enthält
 		number_of_reflections = new int[params.number_of_reflections];
 		// Array welches die Anzahl an Reflexionen enthält
@@ -139,14 +139,22 @@ public class RaytracingLoop implements Runnable {
 				System.out.println("Keine Polarisation wurde angegeben!");
 				System.exit(1);
 			}
-
+			
+			
+			// Intensitätsverteilungen berechnen
 			final double r = Math.sqrt(zx * zx + zy * zy);
 			final double w2z = w0 * w0 * (1 + (ztt * ztt) / (z0 * z0)); // w(z)quadrat
 
 			double I = 0.0;
 			boolean kaustik = false;
+			
 			if (params.beam_intensity_distribution.equals("gauss")) {
-				I = (2.0 / (w2z * Math.PI)) * Math.exp(-2 * r * r / w2z);// Gauss Grundmode
+				if(params.laser_operation_mode.equals("pulsed")) {
+					I = (2/(w2z)) * Math.sqrt(Math.log(2)/(Math.PI * Math.PI *Math.PI)) * Math.exp(-2 * r * r / w2z);
+				}
+				else {
+					I = (2.0 / (w2z * Math.PI)) * Math.exp(-2 * r * r / w2z);// Gauss Grundmode
+				}
 				kaustik = true;
 			}
 			else if (params.beam_intensity_distribution.equals("profile")) {
@@ -175,8 +183,8 @@ public class RaytracingLoop implements Runnable {
 				System.out.println(params.polarization);
 				System.exit(1);
 			}
-
-			power_in += I;
+			
+			power_in += I; // Speichert gesamte Intensität aller simulierter Strahlen (für Normierung auf mittlere Leistung)
 
 			if (kaustik == true) {
 				strahl = new Ray(ov, rv, ks, w0, nzs, ztt, z0, I, p1, p2, "ray");

@@ -171,12 +171,12 @@ def tris_area (tris):
     return tris_a
 
 
-def calc_ablat_dist (tris_int, Phi_th, delta_opt):
-    intensities = tris_int * 1e8
-    ablat_z = np.zeros([len(intensities),1])
+def calc_ablat_dist (tris_int, Phi_th, tau_pulse, delta_opt):
+    fluence = tris_int * 1e8 * tau_pulse #Umrechnung von W/Mikrometer^2 in W/cm^2
+    ablat_z = np.zeros([len(fluence),1])
    # tris_phi = intensities*t_p
     
-    ablat_z = np.where((intensities != 0) & (intensities > Phi_th),delta_opt*np.log(intensities/Phi_th),0)
+    ablat_z = np.where((fluence != 0) & (fluence > Phi_th),delta_opt*np.log(fluence/Phi_th),0)
     
     return ablat_z
 

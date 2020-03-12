@@ -54,6 +54,7 @@ public class Raytracer {
 
 	public void calculate(String argv[]) // Added FFE
 	{
+		System.out.print("neu...\n");
 		if (argv.length < 3) {
 			System.out.println("Error! Not enough arguments.");
 			System.out.println("Usage:");
@@ -181,30 +182,39 @@ public class Raytracer {
 				abs_power_of_reflections[i] += rtLoops[threadnumber].abs_power_of_reflections[i];
 			}
 		}
-
+		double Leistung = 0;
+		double Faktor = 0;
+		double E_p = Double.valueOf(params.beamPower) / Double.valueOf(params.pulse_repetition_rate);
+		double tau_p = Double.valueOf(params.pulse_duration);
 		// Optionale Normierung der Leistung auf gewünschten Wert: -------------------------------------------------------------------------------------------------------
-
+		// Bei Simulation im gepulsten Betrieb wird in Fluenz statt Leistung gerechnet
 		if (params.beamPower != 0) {
-			double Leistung;
-			double Faktor;
-
-			System.out.println("mainwindow Power: " + params.beamPower);
-			try {
-				Leistung = Double.valueOf(params.beamPower);
-				Faktor = Leistung / power_in;
-
-				power_in = power_in * Faktor;
-				power_lost = power_lost * Faktor;
-
-				for (int o = 0; o < tset[0].getNumber(); o++) {
-
-					tset[0].triangles[o].setPower(tset[0].triangles[o].getPower() * Faktor);
-
+				System.out.println("mainwindow Power: " + params.beamPower);
+				try {
+					Faktor = 2*E_p / (tau_p * power_in); 
+					power_in = power_in * Faktor;
+					power_lost = power_lost * Faktor;
+					for (int o = 0; o < tset[0].getNumber(); o++) {
+						tset[0].triangles[o].setPower(tset[0].triangles[o].getPower() * Faktor);
+					}
 				}
-
-			}
-			catch (final Exception ee) {
-			}
+				catch (final Exception ee) {
+				}
+			
+			/*else {
+				System.out.println("mainwindow Power: " + params.beamPower);
+				try {
+					Leistung = Double.valueOf(params.beamPower); // Eingabewert der Mittleren Leistung aus Parameter file
+					Faktor = Leistung / power_in; 
+					power_in = power_in * Faktor;
+					power_lost = power_lost * Faktor;
+					for (int o = 0; o < tset[0].getNumber(); o++) {
+						tset[0].triangles[o].setPower(tset[0].triangles[o].getPower() * Faktor);
+					}
+				}
+				catch (final Exception ee) {
+				}
+			}*/
 		}
 
 		final long endzeit = System.currentTimeMillis();
@@ -238,7 +248,7 @@ public class Raytracer {
 				try {
 					System.out.println("csv..");
 					// File datei = new File(outname+"."+tset[i].name+".output.csv");
-					final File datei = new File(outname + ".csv");
+					final File datei = new File(outname + "_output.csv");
 					final FileWriter ausgabestrom = new FileWriter(datei);
 					final PrintWriter ausgabe = new PrintWriter(ausgabestrom);
 					//schreibeDreieckIntensitaetCSVDatei(tset[i], ausgabe, normfaktor);
@@ -279,7 +289,7 @@ public class Raytracer {
 			for (int i = 0; i < tset.length; i++) {
 				try {
 					// File datei = new File(outname+"."+tset[i].name+".output_lin.ply");
-					final File datei = new File(outname + "_output_fetz.ply");
+					final File datei = new File(outname + "_intensity_out.ply");
 					final FileWriter ausgabestrom = new FileWriter(datei);
 					final PrintWriter ausgabe = new PrintWriter(ausgabestrom);
 					schreibeDreieckIntensitaetPLYDatei(tset[i], "FETZ", ausgabe);
@@ -350,7 +360,7 @@ public class Raytracer {
 			logdaten = logdaten + (i + 1) + "\t" + number_of_reflections[i] + "\t" + abs_power_of_reflections[i] + "\n";
 		}
 		try {
-			final File datei = new File(outname + ".log");
+			final File datei = new File(outname + "_settings.log");
 			final FileWriter ausgabestrom = new FileWriter(datei);
 			final PrintWriter ausgabe = new PrintWriter(ausgabestrom);
 			ausgabe.println(logdaten);
@@ -394,6 +404,7 @@ public class Raytracer {
 		this.set_global_triSet(tset);
 
 		System.out.println("Done_Tracing\n\n");
+		System.out.println("Skalierung: " + Faktor + "Pulsenergie: " + E_p + "Pulsdauer: " + tau_p);
 
 	}
 	
@@ -609,7 +620,7 @@ public class Raytracer {
 		if (ts != null) {
 			ausgabe.println("ply");
 			ausgabe.println("format ascii 1.0");
-			ausgabe.println("comment author: IFSW Michalowski Raytracer changed FFE");
+			ausgabe.println("comment author: IFSW Michalowski Raytracer changed FFE/JH");
 			ausgabe.println("comment object: ");
 			ausgabe.println("element vertex " + 3 * ts.getNumber());
 			ausgabe.println("property float x");
@@ -657,9 +668,9 @@ public class Raytracer {
 							G = (int) ( cmap.get(cmap_i)[1]*255.);
 							B = (int) ( cmap.get(cmap_i)[2]*255.);
 					}
-					ausgabe.println((float) corners[0][j] / 1000000.0f + " " // FFE: nochmal durch 1000 geteilt
-							+ (float) corners[1][j] / 1000000.0f + " " + (float) corners[2][j] / 1000000.0f + " " + R + " " + G + " " + B);
-
+					ausgabe.println((float) (corners[0][j] / 1000.0f) + " " // FFE: nochmal durch 1000 geteilt
+							+ (float) (corners[1][j] / 1000.0f) + " " + (float) (corners[2][j] / 1000.0f) + " " + R + " " + G + " " + B);
+					System.out.println(i + " " + (float) (corners[0][j] / 1000.0f) + " " + (float) corners[0][j] / 1000.0f);
 				}
 			}
 			for (int i = 0; i < ts.getNumber(); i++) {
@@ -734,15 +745,10 @@ public class Raytracer {
 					p2 = new double[3];
 					p3 = new double[3];
 					for (int i = 0; i < 3; i++) {
-						p1[i] = (new Double(p1s[i])).doubleValue() * 1000; // Konvertieren
-						// von
-						// mm
-						// nach
-						// µm
-						// (*1000)
+						p1[i] = (new Double(p1s[i])).doubleValue() * 1000; 
 						p2[i] = (new Double(p2s[i])).doubleValue() * 1000;
 						p3[i] = (new Double(p3s[i])).doubleValue() * 1000;
-
+						// Konvertieren von mm zu µm für Raytracing
 					}
 					ol.add(new Triangle(p1, p2, p3, material, bezeichnung));
 				}
@@ -757,15 +763,10 @@ public class Raytracer {
 					p2 = new double[3];
 					p3 = new double[3];
 					for (int i = 0; i < 3; i++) {
-						p1[i] = (new Double(p1s[i])).doubleValue() * 1000; // Konvertieren
-						// von
-						// mm
-						// nach
-						// µm
-						// (*1000)
+						p1[i] = (new Double(p1s[i])).doubleValue() * 1000; 
 						p2[i] = (new Double(p2s[i])).doubleValue() * 1000;
 						p3[i] = (new Double(p3s[i])).doubleValue() * 1000;
-
+						// Konvertieren von mm zu µm für Raytracing
 					}
 					Triangle t = new Triangle(p1, p2, p3, material, bezeichnung);
 					t.type = 1;

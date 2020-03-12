@@ -171,16 +171,51 @@ def tris_area (tris):
     return tris_a
 
 
-def calc_ablat_dist (tris_int, Phi_th, delta_opt):
-    intensities = tris_int * 1e8
-    ablat_z = np.zeros([len(intensities),1])
+def calc_ablat_dist (tris_int, Phi_th, tau_pulse, delta_opt):
+    fluence = tris_int * 1e8 * tau_pulse #Umrechnung von W/Mikrometer^2 in W/cm^2
+    ablat_z = np.zeros([len(fluence),1])
    # tris_phi = intensities*t_p
     
-    ablat_z = np.where((intensities != 0) & (intensities > Phi_th),delta_opt*np.log(intensities/Phi_th),0)
+    ablat_z = np.where((fluence != 0) & (fluence >= Phi_th),delta_opt*np.log(fluence/Phi_th),0)
     
     return ablat_z
 
+#Methode die ein Schnittprofil entlang einer gegebenen Achse in x- und y-Richtung zurückgibt
+def get_profile_cut(points, x_line, y_line, width):
+    
+    x_SP = np.where((points[:,0] < (x_line + width)) & (points[:,0] > (x_line - width)),0,1)
+    y_SP = np.where((points[:,1] < (y_line + width)) & (points[:,1] > (y_line - width)),0,1)
+    x_range = np.where(x_SP)
+    y_range = np.where(y_SP)
+    x_profile = np.delete(points, x_range, axis=0)
+    x_profile = np.delete(x_profile, 0, axis=1)
+    y_profile = np.delete(points, y_range, axis=0)
+    y_profile = np.delete(y_profile, 1, axis=1)
+    
+    x_uniques = np.unique(x_profile[:,0])
+    y_uniques = np.unique(y_profile[:,0])
+    
+    mean_depth_x = np.zeros([len(x_uniques),2])
+    mean_depth_y = np.zeros([len(y_uniques),2])
+    
+    mean_depth_x[:,0] = x_uniques
+    mean_depth_y[:,0] = y_uniques
+    
+    number_x=0
+    for i in x_uniques:
+        faktor = sum(np.where(x_profile[:,0] == i,1,0))
+        summe = sum(np.where(x_profile[:,0] == i,x_profile[:,1],0))
+        mean_depth_x[number_x,1] = summe/faktor
+        number_x += 1
+        
+    number_y=0
+    for i in y_uniques:
+        faktor = sum(np.where(y_profile[:,0] == i,1,0))
+        summe = sum(np.where(y_profile[:,0] == i,y_profile[:,1],0))
+        mean_depth_y[number_y,1] = summe/faktor
+        number_y += 1
 
+    return mean_depth_x, mean_depth_y
 
 
 

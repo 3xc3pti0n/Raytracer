@@ -21,6 +21,7 @@ public class Ray
 	double[] nzs;// Auf Laenge 1 normierter Vektor, senkrecht auf rv
 	double ztt;// Distanz auf dem Zentralstrahl vom Startpunkt ov bis zur Strahltaille
 	double z0; // Rayleighlaenge
+	double F; // Fluenz des Strahls
 
 	String name; // Bezeichnung des Strahls
 	boolean kaustik; // true bedeutet, Strahl hat Kaustik, false bedeutet: normaler gerader Strahl
@@ -52,7 +53,27 @@ public class Ray
 		setPower(I);
 		kaustik = true;
 	}
-
+	
+	// Folgender Konstruktor erzeugt gepulste Laserstrahlen mit Kaustik (neuer Paramete ist die Fluenz)
+	// Vorsicht! Achte gegebenenfalls darauf, dass pol1 und pol2 auf 1 normiert sind
+	public Ray(double[] ov, double[] rv, double k, double w0, double[] nzs, double ztt, double z0, double I, double[] pol1, double[] pol2, double F, String s) 
+	{
+		this.ov = ov;
+		this.rv = Algorithmen.getNormTox(rv, 1);
+		this.k = k;
+		this.w0 = w0;
+		this.nzs = Algorithmen.getNormTox(nzs, 1);
+		this.ztt = ztt;
+		this.z0 = z0;
+		this.name = s;
+		this.p1 = pol1;
+		this.p2 = pol2;
+		setPower(I);
+		this.F = F;
+		kaustik = true;
+	}
+	
+	
 	/**
 	 * Methode berechnet aus den Polarisationsvektoren die aktuelle Intensitaet
 	 */

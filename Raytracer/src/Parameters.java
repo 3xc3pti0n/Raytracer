@@ -23,6 +23,10 @@ public class Parameters {
 	String beam_source_type = "circle";
 	double beam_min_distance = 1e-9;
 	String beam_intensity_distribution = "gauss";
+	// Parameters if operation mode equals pulsed
+	String laser_operation_mode = "pulsed";
+	double pulse_duration = 1e-12; //Pulsdauer in sec
+	double pulse_repetition_rate = 1e3; // Reprate in Hz
 	String material_name = "Steel@1030nm 300K";
 	double material_IOR_real = 2.59;
 	double material_IOR_imag = 4.87;
@@ -89,6 +93,18 @@ public class Parameters {
 				}
 				if (params[0].equals("beam_intensity_distribution")) {
 					beam_intensity_distribution = params[1];
+					validparam = true;
+				}
+				if (params[0].equals("laser_operation_mode")) {
+					laser_operation_mode = params[1];
+					validparam = true;
+				}
+				if (params[0].equals("pulse_duration")) {
+					pulse_duration = Double.valueOf(params[1]).doubleValue();
+					validparam = true;
+				}
+				if (params[0].equals("pulse_repetition_rate")) {
+					pulse_repetition_rate = Double.valueOf(params[1]).doubleValue();
 					validparam = true;
 				}
 				if (params[0].equals("target_csv")) {
@@ -263,6 +279,10 @@ public class Parameters {
 		s += "Beam source width x (if rectangle) =" + beam_source_width_x + "\n";
 		s += "Beam source width y (if rectangle) =" + beam_source_width_y + "\n";
 		s += "Beam intensity distribution        =" + beam_intensity_distribution + "\n";
+		// Parameters if operation mode equals pulsed
+		s += "Laser operation mode               =" + laser_operation_mode + "\n";
+		s += "Pulse duration				     =" + pulse_duration + "\n";
+		s += "Pulse repetition rate			     =" + pulse_repetition_rate + "\n";
 		s += "Minimal propagation distance       =" + beam_min_distance + "\n";
 		s += "Material name                      =" + material_name + "\n";
 		s += "Material index of refraction r     =" + material_IOR_real + "\n";
