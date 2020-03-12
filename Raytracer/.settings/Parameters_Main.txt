@@ -1,0 +1,12 @@
+#Parameters Main
+# Process
+akt_feed  = 20.0
+end_time  = 0.3555555
+# Model
+# Directories
+runDir  = I:\OF_models\trunk\OpenFoam_Fetzer\Runs\conepercroeslerpap10_st_1_kW_20_fast_depth_cone_3_16_17_08_20
+rel_diff_scat  = 0.0
+beamPower  = 1000.0
+multimaterial  = false
+beam_power_dat  = P.data
+beam_osc_dat  = x.data

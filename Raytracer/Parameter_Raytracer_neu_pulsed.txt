@@ -1,0 +1,36 @@
+#Parameters
+Number_of_threads  = 1
+Number_of_reflections  = 5
+Number_of_beams  = 25000
+#Polarisations: linear_x or linear_y or zirkular or radial or azimutal
+polarization  = zirkular
+Number_of_sublevels  = 12
+Beam_waist_radius  = 26.72
+Beam_wavelength  = 1.03
+Beam_M2  = 1.5
+Beam_distance_to_focus  = 163000
+laser_operation_mode = "pulsed"
+pulse_duration = 8e-12
+pulse_repetition_rate = 150e3
+#Geometry of beam source: circle or rectangle
+Beam_source_type  = circle
+#If beam source type: rectangle
+Beam_source_width_x  = 10000.0
+Beam_source_width_y  = 10000.0
+#If beam source type: circle
+Beam_source_radius  = 6000.0
+Beam_min_distance  = 1.0E-9
+Material_name  = iron
+Material_IOR_real  = 2.92
+Material_IOR_imag  = 3.35
+Target_csv  = true
+Target_ply_lin  = true
+Target_ply_log  = false
+bounding_box_spacing  = 0.1
+Incoming_beam_position_vector  = 0.0, 0.0, -163000.0
+#Beam direction vector must be parallel to z-axis (other direction not yet implemented, coming soon.)
+Incoming_beam_direction_vector  = 0.0, 0.0, 1.0
+#Beam intensity distributions: ring or  gauss or tophat or planewave
+Beam_intensity_distribution  = gauss
+beamPower  = 450
+rel_diff_scat  = 0.0
