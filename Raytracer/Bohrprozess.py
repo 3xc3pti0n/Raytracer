@@ -7,7 +7,6 @@ Created on Tue Nov 26 15:25:47 2019
 
 import subprocess as sp
 import shutil
-import random
 import time
 from pathlib import Path
 import os
